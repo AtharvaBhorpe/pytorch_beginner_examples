@@ -1,0 +1,303 @@
+{
+  "version": "1",
+  "metadata": {
+    "marimo_version": "0.23.8",
+    "script_metadata_hash": null
+  },
+  "cells": [
+    {
+      "id": "Hbol",
+      "code_hash": "1d0db38904205bec4d6f6f6a1f6cec3e",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/plain": ""
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "MJUe",
+      "code_hash": "f31ac199f6979169c4da07ac40cd16e6",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h3 id=\"imports\">Imports</h3></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "vblA",
+      "code_hash": "4590bdf125cc0a0c124253a795a1a2d8",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/plain": ""
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "bkHC",
+      "code_hash": "19cc1f1c2ae43cabc860f3efa952a30c",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h3 id=\"setup\">Setup</h3>\n<ul>\n<li>Set device (GPU/CPU)</li>\n<li>Print Python &amp; Pytorch versions</li>\n<li>Set random seeds for reproducibility</li>\n</ul></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "gVYS",
+      "code_hash": "8659b190c62dd85ff46618c02d05c932",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/plain": ""
+          }
+        }
+      ],
+      "console": [
+        {
+          "type": "stream",
+          "name": "stdout",
+          "text": "GPU Available: NVIDIA GeForce RTX 5060 Laptop GPU\nMemory: 8.1 GB\n\nPython 3.12.13\n\nPytorch 2.10.0\nRandom seed set to 42\n",
+          "mimetype": "text/plain"
+        }
+      ]
+    },
+    {
+      "id": "TYgN",
+      "code_hash": "e6abbbda6c46d3e2988fad1e458cf74d",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h3 id=\"hyperparameters\">Hyperparameters</h3></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "TQRM",
+      "code_hash": "35ff37d67696f16a306726d448c3437c",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/plain": ""
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "uiQq",
+      "code_hash": "112f8cf24a449a0205e359aa9e5e1cb5",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h3 id=\"load-data\">Load Data</h3></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "RCeH",
+      "code_hash": "0a08301625c4afb052940fae9ef80138",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/plain": ""
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "gOpV",
+      "code_hash": "5cf026777db21a646313a807659ddae0",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h3 id=\"fully-connected-network\">Fully Connected Network</h3></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "iVyX",
+      "code_hash": "e1f5d7ce1dde66c0a2b914c5afa818bb",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/plain": ""
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "GWOv",
+      "code_hash": "2e1fabc7028c6515540479bdb0489107",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h3 id=\"initialize-network\">Initialize Network</h3></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "ZNqk",
+      "code_hash": "6085ed87b69a366c9c5398994c7ff184",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/plain": ""
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "XfCm",
+      "code_hash": "6bfd2c0f2a000d45efabc74f9dde8b34",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h3 id=\"loss-optimizer\">Loss &amp; Optimizer</h3></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "GKKy",
+      "code_hash": "95e962dd2c99fdf860d058c992317b30",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/plain": ""
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "Czlv",
+      "code_hash": "d699844f8e1f16de863f9d803dfc78bb",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h3 id=\"train-the-network\">Train the Network</h3></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "FEUY",
+      "code_hash": "16159dababd27292193fa6ece34afa82",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/html": "<div style='display: flex;flex: 1;flex-direction: column;justify-content: flex-start;align-items: normal;flex-wrap: nowrap;gap: 0.5rem'><marimo-progress data-title='&quot;Training...&quot;' data-total='10' data-progress='10' data-rate='0.5445290430012785' data-eta='0.0'></marimo-progress></div>"
+          }
+        }
+      ],
+      "console": [
+        {
+          "type": "stream",
+          "name": "stdout",
+          "text": "Epoch [1/10] | Batch [0/938] | Loss: 0.0034\nEpoch [1/10] | Batch [500/938] | Loss: 0.0062\n>>> Epoch 1 complete - Avg Loss: 0.0114\n\nEpoch [2/10] | Batch [0/938] | Loss: 0.0086\nEpoch [2/10] | Batch [500/938] | Loss: 0.0146\n>>> Epoch 2 complete - Avg Loss: 0.0097\n\nEpoch [3/10] | Batch [0/938] | Loss: 0.0062\nEpoch [3/10] | Batch [500/938] | Loss: 0.0011\n>>> Epoch 3 complete - Avg Loss: 0.0094\n\nEpoch [4/10] | Batch [0/938] | Loss: 0.0022\nEpoch [4/10] | Batch [500/938] | Loss: 0.0031\n>>> Epoch 4 complete - Avg Loss: 0.0082\n\nEpoch [5/10] | Batch [0/938] | Loss: 0.0089\nEpoch [5/10] | Batch [500/938] | Loss: 0.0025\n>>> Epoch 5 complete - Avg Loss: 0.0080\n\nEpoch [6/10] | Batch [0/938] | Loss: 0.0069\nEpoch [6/10] | Batch [500/938] | Loss: 0.0061\n>>> Epoch 6 complete - Avg Loss: 0.0083\n\nEpoch [7/10] | Batch [0/938] | Loss: 0.0103\nEpoch [7/10] | Batch [500/938] | Loss: 0.0161\n>>> Epoch 7 complete - Avg Loss: 0.0062\n\nEpoch [8/10] | Batch [0/938] | Loss: 0.0008\nEpoch [8/10] | Batch [500/938] | Loss: 0.0040\n>>> Epoch 8 complete - Avg Loss: 0.0065\n\nEpoch [9/10] | Batch [0/938] | Loss: 0.0050\nEpoch [9/10] | Batch [500/938] | Loss: 0.0031\n>>> Epoch 9 complete - Avg Loss: 0.0065\n\nEpoch [10/10] | Batch [0/938] | Loss: 0.0004\nEpoch [10/10] | Batch [500/938] | Loss: 0.0004\n>>> Epoch 10 complete - Avg Loss: 0.0053\n\n",
+          "mimetype": "text/plain"
+        }
+      ]
+    },
+    {
+      "id": "ISIq",
+      "code_hash": "2be36e6524810ff2034488fbcd5cdda5",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/markdown": "<span class=\"markdown prose dark:prose-invert contents\"><h3 id=\"check-accuracy-on-training-test-dataset\">Check accuracy on training &amp; test dataset</h3></span>"
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "XWYb",
+      "code_hash": "56e44f541aa32be47475a93bfe5d5e2c",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/plain": ""
+          }
+        }
+      ],
+      "console": []
+    },
+    {
+      "id": "Ssmb",
+      "code_hash": "92fa1dba4247a5a7c38202d009e7dcf5",
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/plain": ""
+          }
+        }
+      ],
+      "console": [
+        {
+          "type": "stream",
+          "name": "stdout",
+          "text": "Checking accuracy on Training Data:\nGot 58996 / 60000 with accuracy 98.33\n\nChecking accuracy on Testing Data:\nGot 9696 / 10000 with accuracy 96.96\n\n",
+          "mimetype": "text/plain"
+        }
+      ]
+    },
+    {
+      "id": "uFNG",
+      "code_hash": null,
+      "outputs": [
+        {
+          "type": "data",
+          "data": {
+            "text/plain": ""
+          }
+        }
+      ],
+      "console": []
+    }
+  ]
+}

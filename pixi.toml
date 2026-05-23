@@ -1,0 +1,36 @@
+[workspace]
+channels = ["conda-forge", "pytorch"]
+name = "pytorch_beginner_examples"
+platforms = ["linux-64", "win-64"]
+version = "0.1.0"
+
+[feature.gpu.system-requirements]
+cuda = "13.0"
+
+[feature.gpu.dependencies]
+cuda-version = "13.2*"
+pytorch-gpu = "*"
+
+[feature.cpu.dependencies]
+pytorch-cpu = "*"
+
+[environments]
+cpu = ["cpu"]
+default = ["gpu"]
+
+[tasks]
+lab   = "jupyter lab"
+edit  = "marimo edit"
+
+[dependencies]
+python = "3.12.*"
+matplotlib = ">=3.10.9,<4"
+torchvision = ">=0.26.0,<0.27"
+
+
+[pypi-dependencies]
+# These come from PyPI via uv under the hood
+transformers = ">=4.40"
+marimo = "*"
+datasets = "*"
+rerun-sdk = ">=0.19"
