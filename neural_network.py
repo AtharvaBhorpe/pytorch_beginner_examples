@@ -26,9 +26,11 @@ def _():
     import torch.nn.functional as F
     import torch.optim as optim
     from torch.utils.data import DataLoader
+    from torch.utils.data import random_split
     import torchvision.datasets as datasets
     import torchvision.transforms as transforms
     import numpy as np
+    import matplotlib.pyplot as plt
     import sys
     import random
 
@@ -39,7 +41,9 @@ def _():
         nn,
         np,
         optim,
+        plt,
         random,
+        random_split,
         sys,
         torch,
         transforms,
@@ -111,14 +115,22 @@ def _(mo):
 
 
 @app.cell
-def _(DataLoader, batch_size, datasets, transforms):
+def _(DataLoader, batch_size, datasets, random_split, transforms):
     # Load Data
-    train_dataset = datasets.MNIST(root='dataset/', train=True, transform=transforms.ToTensor(), download=True)
+    full_train_dataset = datasets.MNIST(root='dataset/', train=True, transform=transforms.ToTensor(), download=True)
+
+    # 80/20 split
+    train_size = int(0.8 * len(full_train_dataset))  # 48,000 samples for training
+    val_size = len(full_train_dataset) - train_size  # 12,000 samples for validation
+    train_dataset, val_dataset = random_split(full_train_dataset, [train_size, val_size])
+
+
     train_loader = DataLoader(dataset=train_dataset, batch_size=batch_size, shuffle=True)
+    val_loader = DataLoader(dataset=val_dataset, batch_size=batch_size, shuffle=False)
 
     test_dataset = datasets.MNIST(root='dataset/', train=False, transform=transforms.ToTensor(), download=True)
-    test_loader = DataLoader(dataset=test_dataset, batch_size=batch_size, shuffle=True)
-    return test_loader, train_loader
+    test_loader = DataLoader(dataset=test_dataset, batch_size=batch_size, shuffle=False)
+    return test_loader, train_loader, val_loader
 
 
 @app.cell(hide_code=True)
@@ -186,9 +198,20 @@ def _(mo):
 
 
 @app.cell
-def _(criterion, device, mo, model, num_epochs, optimizer, train_loader):
+def _(
+    criterion,
+    device,
+    mo,
+    model,
+    num_epochs,
+    optimizer,
+    torch,
+    train_loader,
+    val_loader,
+):
     # Train the Network
-    train_losses = []  # stores average loss per epoch
+    train_losses, val_losses   = [], []  # stores average loss per epoch
+    train_accs,   val_accs     = [], []
 
     with mo.status.progress_bar(total=num_epochs, title="Training...") as bar:
         for epoch in range(num_epochs):
@@ -197,33 +220,56 @@ def _(criterion, device, mo, model, num_epochs, optimizer, train_loader):
                 # Get data to cuda if possible
                 data = data.to(device=device)  # ([64, 1, 28, 28]) : ([batch_size, channels, height, width])
                 targets = targets.to(device=device)
-    
+
                 # Get to correct shape
                 data = data.reshape(data.shape[0], -1)  # ([64, 1, 28, 28]) -> ([64, 784]). NN expects this shape for input layer
-    
+
                 # forward pass
                 scores = model(data)
                 loss = criterion(scores, targets)
-    
+
                 # backward pass
                 optimizer.zero_grad()  # resets the gradient from previous run to zero
                 loss.backward()  # computes gradient by differentiation using chain rule
-    
+
                 # gradient descent or adam step
                 optimizer.step()
-    
+
                 total_loss += loss.item()  # extract scalar from tensor
-    
+
                 # Print training stats every 100 batches
                 if batch_idx % 500 == 0:
                     print(f"Epoch [{epoch+1}/{num_epochs}] | Batch [{batch_idx}/{len(train_loader)}] | Loss: {loss.item():.4f}")
-    
+
+            def get_accuracy(loader, model, device):
+                model.eval()
+                num_correct, num_samples = 0, 0
+                with torch.no_grad():
+                    for x, y in loader:
+                        x, y = x.to(device), y.to(device)
+                        x = x.reshape(x.shape[0], -1)
+                        scores = model(x)
+                        _, predictions = scores.max(1)
+                        num_correct += (predictions == y).sum().item()
+                        num_samples += predictions.size(0)
+                model.train()
+                return num_correct / num_samples  # returns e.g. 0.9732
+
             avg_loss = total_loss / len(train_loader)
             train_losses.append(avg_loss)
-            print(f">>> Epoch {epoch+1} complete - Avg Loss: {avg_loss:.4f}\n")
+    
+            val_loss = sum(
+                criterion(model(x.to(device).reshape(-1, 784)), y.to(device)).item()
+                for x, y in val_loader
+            ) / len(val_loader)
+            val_losses.append(val_loss)
+    
+            train_accs.append(get_accuracy(train_loader, model, device))
+            val_accs.append(get_accuracy(val_loader,   model, device))
+    
+            print(f"Epoch {epoch+1}: train_loss={avg_loss:.4f} | val_loss={val_loss:.4f} | val_acc={val_accs[-1]*100:.2f}%\n")
             bar.update()  # advances the bar by 1 after each epoch
-
-    return
+    return train_accs, train_losses, val_accs, val_losses
 
 
 @app.cell(hide_code=True)
@@ -237,11 +283,9 @@ def _(mo):
 @app.cell
 def _(device, torch):
     # Check accuracy on training & test dataset
-    def check_accuracy(loader, model):
-        if loader.dataset.train:
-            print("Checking accuracy on Training Data:")
-        else:
-            print("Checking accuracy on Testing Data:")
+    def check_accuracy(loader, model, loader_name="Data"):
+        print(f"Checking accuracy on {loader_name}:")
+   
         num_correct = 0  # initialize the number of correctly classified samples to zero
         num_samples = 0  # initialize the number of total samples classified to zero
         model.eval()
@@ -265,9 +309,44 @@ def _(device, torch):
 
 
 @app.cell
-def _(check_accuracy, model, test_loader, train_loader):
-    check_accuracy(loader=train_loader, model=model)
-    check_accuracy(loader=test_loader, model=model)
+def _(check_accuracy, model, test_loader, train_loader, val_loader):
+    check_accuracy(loader=train_loader, model=model, loader_name="Training Data")
+    check_accuracy(loader=val_loader, model=model, loader_name="Validation Data")
+    check_accuracy(loader=test_loader, model=model, loader_name="Testing Data")
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    ### Plot the curves
+    """)
+    return
+
+
+@app.cell
+def _(num_epochs, plt, train_accs, train_losses, val_accs, val_losses):
+    epochs_range = range(1, num_epochs + 1)
+    fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(12, 4))
+
+    # Loss curves
+    ax1.plot(epochs_range, train_losses, label='Train Loss')
+    ax1.plot(epochs_range, val_losses,   label='Val Loss',   linestyle='--')
+    ax1.set_title('Loss vs Epoch')
+    ax1.set_xlabel('Epoch')
+    ax1.set_ylabel('Loss')
+    ax1.legend()
+
+    # Accuracy curves
+    ax2.plot(epochs_range, [a*100 for a in train_accs], label='Train Acc')
+    ax2.plot(epochs_range, [a*100 for a in val_accs],   label='Val Acc',   linestyle='--')
+    ax2.set_title('Accuracy vs Epoch')
+    ax2.set_xlabel('Epoch')
+    ax2.set_ylabel('Accuracy (%)')
+    ax2.legend()
+
+    plt.tight_layout()
+    plt.show()
     return
 
 
