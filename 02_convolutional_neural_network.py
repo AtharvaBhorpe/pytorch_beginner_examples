@@ -197,7 +197,14 @@ def _(mo):
 
 @app.cell
 def _(model, summary):
-    summary(model, input_size=(1, 1, 28, 28))
+    # summary(model, input_size=(1, 1, 28, 28))
+    summary(
+        model,
+        input_size=(1, 1, 28, 28),
+        col_names=["input_size", "output_size", "num_params", "kernel_size", "mult_adds"],
+        col_width=18,
+        row_settings=["var_names"],
+    )
     return
 
 
