@@ -67,7 +67,7 @@ def _(np, random, sys, torch):
         print("No GPU detected. Some cells may run slowly.")
 
     print(f"\nPython {sys.version.split()[0]}")
-    print(f"\nPytorch {torch.__version__}")
+    print(f"Pytorch {torch.__version__}")
 
     # Set random seeds for reproducibility
     SEED = 42
@@ -77,7 +77,7 @@ def _(np, random, sys, torch):
     if torch.cuda.is_available():
         torch.cuda.manual_seed_all(SEED)
 
-    print(f"Random seed set to {SEED}")
+    print(f"\nRandom seed set to {SEED}")
     return (device,)
 
 
