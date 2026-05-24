@@ -26,6 +26,10 @@ edit  = "marimo edit"
 python = "3.12.*"
 matplotlib = ">=3.10.9,<4"
 torchvision = ">=0.26.0,<0.27"
+ipywidgets = ">=8.1.8,<9"
+ipycanvas = ">=0.14.3,<0.15"
+anywidget = ">=0.11.0,<0.12"
+torchinfo = ">=1.8.0,<2"
 
 
 [pypi-dependencies]
