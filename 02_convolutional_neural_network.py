@@ -157,34 +157,32 @@ def _(DataLoader, batch_size, datasets, random_split, transforms):
 
 
 @app.cell
-def _(F, hidden_size, nn):
+def _(F, nn):
     # CNN Network
     class CNN(nn.Module):
-        def __init__(self, in_channels = 1, num_classes = 10):
+        def __init__(self, in_channels = 1, num_classes = 10, hidden_size = 128):
             super().__init__()
-            self.conv1 = nn.Conv2d(in_channels=in_channels, out_channels=8, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
-            self.pool = nn.MaxPool2d(kernel_size=(2, 2), stride=(2, 2))
-            self.conv2 = nn.Conv2d(in_channels=8, out_channels=16, kernel_size=(3, 3), stride=(1, 1), padding=(1, 1))
-            self.fc1 = nn.Linear(16*7*7, hidden_size)
+            self.conv1 = nn.Conv2d(in_channels=in_channels, out_channels=8,  kernel_size=3, stride=1, padding=1)
+            self.conv2 = nn.Conv2d(in_channels=8,           out_channels=16, kernel_size=3, stride=1, padding=1)
+            self.pool = nn.MaxPool2d(kernel_size=2, stride=2)
+            self.fc1 = nn.Linear(16*7*7, hidden_size)  # infers its input size from the first forward pass
             self.fc2 = nn.Linear(hidden_size, num_classes)
 
         def forward(self, x):
-            x = F.relu(self.conv1(x))
-            x = self.pool(x)
-            x = F.relu(self.conv2(x))
-            x = self.pool(x)
-            x = x.reshape(x.shape[0], -1)
+            x = self.pool(F.relu(self.conv1(x)))
+            x = self.pool(F.relu(self.conv2(x)))
+            x = x.flatten(1)
             x = F.relu(self.fc1(x))
-            x = self.fc2(x)
-            return x
+            return self.fc2(x)
 
     return (CNN,)
 
 
 @app.cell
-def _(CNN, device):
+def _(CNN, device, hidden_size, hyper_form):
     # Initialize Network
-    model = CNN().to(device=device)
+    _ = hyper_form.value  # dependency-only, forces re-run
+    model = CNN(hidden_size=hidden_size).to(device=device)
     return (model,)
 
 
@@ -200,6 +198,31 @@ def _(mo):
 @app.cell
 def _(model, summary):
     summary(model, input_size=(1, 1, 28, 28))
+    return
+
+
+@app.cell(hide_code=True)
+def _(mo):
+    mo.md(r"""
+    ---
+    ### Load saved model (optional)
+    Skip training and use previously saved weights.
+    """)
+    return
+
+
+@app.cell
+def _(mo):
+    load_btn = mo.ui.run_button(label="📂 Load mnist_cnn.pt")
+    load_btn
+    return (load_btn,)
+
+
+@app.cell
+def _(device, load_btn, mo, model, torch):
+    mo.stop(not load_btn.value, mo.md("*Click the button above to load saved weights, or proceed to training below.*"))
+    model.load_state_dict(torch.load("mnist_cnn.pt", map_location=device))
+    mo.md("✓ Loaded weights from `mnist_cnn.pt` — you can skip training and go straight to inference.")
     return
 
 
@@ -351,6 +374,10 @@ def _(
 
     # Restore best weights
     model.load_state_dict(best_model_weights)
+
+    # Save the model weights
+    torch.save(model.state_dict(), "mnist_cnn.pt")
+
     mo.output.replace(mo.vstack([
         mo.md(f"**✓ Training complete** — best val_loss: `{early_stopper.best_loss:.4f}`"),
         mo.ui.table(epoch_log),
